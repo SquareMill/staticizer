@@ -33,11 +33,13 @@ module Staticizer
     end
 
     def crawl
+      @log.info("Starting crawl")
       while(@url_queue.length > 0)
         url, info = @url_queue.shift
         @processed_urls << url
         process_url(url, info)
       end
+      @log.info("Finished crawl")
     end
 
     def extract_hrefs(doc, base_uri)
