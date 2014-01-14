@@ -18,6 +18,19 @@ We wanted the site uploaded to S3 to respond to the *exact* same URLs (where pos
 the existing site. This way when the  site goes down incoming links from Google search 
 results etc. will still work.
 
+## TODO
+
+* Abillity to specify AWS credentials via file or environment options
+* Decide what to do with URLs with query strings. Currently they are crawled and uploaded to S3, but those keys cannot be accessed. ex http://squaremill.com/file?test=1 will be uploaded with the key file?test=1, but can only be accessed by encoding the ? like this %3Ftest=1
+* Create a 404 file on S3
+* Provide the option to rewrite absolute URLs to relative urls so that hosting can work on a different domain.
+* Multithread the crawler
+* Check for too many redirects
+* Provide regex options for what urls are scraped
+* Better handling of incorrect server mime types (ex. server returns text/plain for css instead of text/css)
+* Provide more options for uploading (upload via scp, ftp, custom etc.). Split out save/uploading into an interface.
+* Handle large files in a more memory efficient way by streaming uploads/downloads
+
 ## Installation
 
 Add this line to your application's Gemfile:
