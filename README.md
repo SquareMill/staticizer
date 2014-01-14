@@ -106,7 +106,7 @@ This will only crawl urls in the domain squaremill.com
     )
     s.crawl
 
-## Cralwer Options
+## Crawler Options
 
 * :aws - Hash of connection options passed to aws/sdk gem
 * :filter_url - proc called to see if a discovered URL should be crawled, return nil to not crawl a url, return the url (can be modified) to crawl
