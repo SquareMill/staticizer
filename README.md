@@ -21,6 +21,7 @@ results etc. will still work.
 ## TODO
 
 * Abillity to specify AWS credentials via file or environment options
+* Tests!
 * Decide what to do with URLs with query strings. Currently they are crawled and uploaded to S3, but those keys cannot be accessed. ex http://squaremill.com/file?test=1 will be uploaded with the key file?test=1, but can only be accessed by encoding the ? like this %3Ftest=1
 * Create a 404 file on S3
 * Provide the option to rewrite absolute URLs to relative urls so that hosting can work on a different domain.
