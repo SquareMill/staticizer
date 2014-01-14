@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["conor.hunt+git@gmail.com"]
   spec.description   = %q{TODO: A tool to create a static version of a website for hosting on S3.}
   spec.summary       = %q{TODO: A tool to create a static version of a website for hosting on S3.}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/SquareMill/staticizer"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
