@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Staticizer::VERSION
   spec.authors       = ["Conor Hunt"]
   spec.email         = ["conor.hunt+git@gmail.com"]
-  spec.description   = %q{TODO: A tool to create a static version of a website for hosting on S3.}
-  spec.summary       = %q{TODO: A tool to create a static version of a website for hosting on S3.}
+  spec.description   = %q{A tool to create a static version of a website for hosting on S3. Can be used to create a cheap emergency backup version of a dynamic website.}
+  spec.summary       = %q{A tool to create a static version of a website for hosting on S3.}
   spec.homepage      = "https://github.com/SquareMill/staticizer"
   spec.license       = "MIT"
 
