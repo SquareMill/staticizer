@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
+
+require 'staticizer'
+require 'staticizer/command'
+
+options, initial_page = Staticizer::Command.parse(ARGV)
+s = Staticizer::Crawler.new(initial_page, options)
+s.crawl
