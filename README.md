@@ -32,7 +32,28 @@ Or install it yourself as:
 
     $ gem install s3static
 
-## Usage
+## Command line usage
+
+The tool can either be used via the 'staticizer' commandline tool or via requiring the library.
+
+
+### Crawl a website and write to disk
+
+    staticizer http://squaremill.com -output-dir=/tmp/crawl
+
+### Crawl a website and upload to AWS
+
+    staticizer http://squaremill.com -aws-s3-bucket=squaremill.com --aws-access-key=HJFJS5gSJHMDZDFFSSDQQ --aws-secret-key=HIA7T189234aADfFAdf322Vs12duRhOHy+23mc1+s
+
+### Crawl a website and allow several domains to be crawled
+
+    staticizer http://squaremill.com --valid-domains=squaremill.com,www.squaremill.com,img.squaremill.com
+
+## Code Usage
+
+For all these examples you must first:
+
+    require 'staticizer'
 
 ### Crawl a website and upload to AWS
 
