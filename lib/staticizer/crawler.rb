@@ -6,6 +6,9 @@ require 'logger'
 
 module Staticizer
   class Crawler
+    attr_reader :url_queue
+    attr_accessor :output_dir
+
     def initialize(initial_page, opts = {})
       if initial_page.nil?
         raise ArgumentError, "Initial page required"
@@ -14,7 +17,7 @@ module Staticizer
       @opts = opts.dup
       @url_queue = []
       @processed_urls = []
-      @opts[:output_dir] ||= File.expand_path("crawl/")
+      @output_dir = @opts[:output_dir] || File.expand_path("crawl/")
       @log = @opts[:logger] || Logger.new(STDOUT)
       @log.level = @opts[:log_level] || Logger::INFO
 
@@ -30,6 +33,14 @@ module Staticizer
         @opts[:valid_domains] ||= [uri.host]
       end
       add_url(initial_page)
+    end
+
+    def log_level
+      @log.level
+    end
+
+    def log_level=(level)
+      @log.level = level
     end
 
     def crawl
@@ -101,7 +112,7 @@ module Staticizer
       path_segments = path.scan(%r{[^/]*/})
       filename = path.include?("/") ? path[path.rindex("/")+1..-1] : path
 
-      current = @opts[:output_dir]
+      current = @output_dir
       FileUtils.mkdir_p(current) unless File.exist?(current)
 
       # Create all the directories necessary for this file
