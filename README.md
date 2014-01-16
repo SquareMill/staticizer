@@ -44,7 +44,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install s3static
+    $ gem install staticizer
 
 ## Command line usage
 
