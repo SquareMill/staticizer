@@ -70,7 +70,7 @@ module Staticizer
     end
 
     def extract_css_urls(css, base_uri)
-      css.scan(/url\(([^)]+)\)/).map {|src| make_absolute(base_uri, src[0]) }
+      css.scan(/url\(['"]?(.+?)['"]?\)/).map {|src| make_absolute(base_uri, src[0]) }
     end
 
     def add_urls(urls, info = {})
