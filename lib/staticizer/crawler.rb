@@ -186,7 +186,7 @@ module Staticizer
     # TODO: for AWS S3 hosting we could instead create a redirect?
     def process_redirect(url, destination_url)
       body = "<html><head><META http-equiv='refresh' content='0;URL=\"#{destination_url}\"'></head><body>You are being redirected to <a href='#{destination_url}'>#{destination_url}</a>.</body></html>"
-      save_page_to_aws(body, url)
+      save_page(body, url)
     end
 
     # Fetch a URI and save it to disk
