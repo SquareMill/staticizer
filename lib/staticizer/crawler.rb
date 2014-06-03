@@ -160,10 +160,10 @@ module Staticizer
       if response.respond_to?(:read_body)
         @s3_bucket.objects[key].write(response.read_body, opts)
       else
-        @s3_bucket.objects[key].write(response, opts)  
-      end      
+        @s3_bucket.objects[key].write(response, opts)
+      end
     end
- 
+
     def process_success(response, parsed_uri)
       url = parsed_uri.to_s
       case response['content-type']
@@ -176,7 +176,7 @@ module Staticizer
         add_urls(extract_links(doc, url), {:type_hint => "link"})
         add_urls(extract_scripts(doc, url), {:type_hint => "script"})
         add_urls(extract_images(doc, url), {:type_hint => "image"})
-        add_urls(extract_hrefs(doc, url), {:type_hint => "href"})
+        add_urls(extract_hrefs(doc, url), {:type_hint => "href"}) unless @opts[:single_page]
       else
         save_page(response, parsed_uri)
       end
