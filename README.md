@@ -9,13 +9,14 @@ website. If the website goes down this backup would be available
 with reduced functionality.
 
 S3 and Route 53 provide an great way to host a static emergency backup for a website.
-See this article - http://aws.typepad.com/aws/2013/02/create-a-backup-website-using-route-53-dns-failover-and-s3-website-hosting.html 
-. In our experience it works very well and is incredibly cheap at less than US$1 a month (depending on the size of the website).
+See this article - http://aws.typepad.com/aws/2013/02/create-a-backup-website-using-route-53-dns-failover-and-s3-website-hosting.html
+. In our experience it works well and is incredibly cheap. Our average sized website
+with a few hundred pages and assets is less than US$1 a month.
 
-We tried using exsisting tools httrack/wget to crawl and create a static version
-of the site to upload to S3, but we found that they did not work well with S3 hosting. 
-We wanted the site uploaded to S3 to respond to the *exact* same URLs (where possible) as 
-the existing site. This way when the  site goes down incoming links from Google search 
+We tried using existing tools httrack/wget to crawl and create a static version
+of the site to upload to S3, but we found that they did not work well with S3 hosting.
+We wanted the site uploaded to S3 to respond to the *exact* same URLs (where possible) as
+the existing site. This way when the  site goes down incoming links from Google search
 results etc. will still work.
 
 ## TODO
@@ -86,6 +87,21 @@ This will only crawl urls in the domain squaremill.com
 
     s = Staticizer::Crawler.new("http://squaremill.com", :output_dir => "/tmp/crawl")
     s.crawl
+
+
+### Crawl a website and make all pages contain 'noindex' meta tag
+
+    s = Staticizer::Crawler.new("http://squaremill.com",
+      :output_dir => "/tmp/crawl",
+      :process_body => lambda {|body, uri, opts|
+        # not the best regex, but it will do for our use
+        body = body.gsub(/<meta\s+name=['"]robots[^>]+>/i,'')
+        body = body.gsub(/<head>/i,"<head>\n<meta name='robots' content='noindex'>")
+        body
+      }
+    )
+    s.crawl
+
 
 ### Crawl a website and rewrite all non www urls to www
 

@@ -55,7 +55,7 @@ module Staticizer
         end
       end
 
-      begin      
+      begin
         parser.parse!(args)
         initial_page = ARGV.pop
         raise ArgumentError, "Need to specify an initial URL to start the crawl" unless initial_page
