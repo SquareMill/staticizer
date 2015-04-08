@@ -32,6 +32,11 @@ module Staticizer
         uri = URI.parse(initial_page)
         @opts[:valid_domains] ||= [uri.host]
       end
+
+      if @opts[:process_body]
+        @process_body = @opts[:process_body]
+      end
+
       add_url(initial_page)
     end
 
@@ -132,6 +137,7 @@ module Staticizer
       end
 
       body = response.respond_to?(:read_body) ? response.read_body : response
+      body = process_body(body, uri, {})
       outfile = File.join(current, "/#{filename}")
       if filename == ""
         indexfile = File.join(outfile, "/index.html")
@@ -158,9 +164,11 @@ module Staticizer
       opts[:content_type] = response['content-type'] rescue "text/html"
       @log.info "Uploading #{key} to s3 with content type #{opts[:content_type]}"
       if response.respond_to?(:read_body)
-        @s3_bucket.objects[key].write(response.read_body, opts)
+        body = process_body(response.read_body, uri, opts)
+        @s3_bucket.objects[key].write(body, opts)
       else
-        @s3_bucket.objects[key].write(response, opts)
+        body = process_body(response, uri, opts)
+        @s3_bucket.objects[key].write(body, opts)
       end
     end
 
@@ -187,6 +195,13 @@ module Staticizer
     def process_redirect(url, destination_url)
       body = "<html><head><META http-equiv='refresh' content='0;URL=\"#{destination_url}\"'></head><body>You are being redirected to <a href='#{destination_url}'>#{destination_url}</a>.</body></html>"
       save_page(body, url)
+    end
+
+    def process_body(body, uri, opts)
+      if @process_body
+        body = @process_body.call(body, uri, opts)
+      end
+      body
     end
 
     # Fetch a URI and save it to disk
