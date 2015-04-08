@@ -49,8 +49,7 @@ Or install it yourself as:
 
 ## Command line usage
 
-The tool can either be used via the 'staticizer' commandline tool or via requiring the library.
-
+Staticizer can be used through the commandline tool or by requiring the library.
 
 ### Crawl a website and write to disk
 
@@ -125,11 +124,12 @@ This will only crawl urls in the domain squaremill.com
 ## Crawler Options
 
 * :aws - Hash of connection options passed to aws/sdk gem
-* :filter_url - proc called to see if a discovered URL should be crawled, return nil to not crawl a url, return the url (can be modified) to crawl
+* :filter_url - lambda called to see if a discovered URL should be crawled, return the url (can be modified) to crawl, return nil otherwise
 * :output_dir - if writing a site to disk the directory to write to, will be created if it does not exist
 * :logger - A logger object responding to the usual Ruby Logger methods.
 * :log_level - Log level - defaults to INFO.
-# :valid_domains - Array of domains that should be crawled. Domains not in this list will be ignored.
+* :valid_domains - Array of domains that should be crawled. Domains not in this list will be ignored.
+* :process_body - lambda called to pre-process body of content before writing it out.
 
 ## Contributing
 
