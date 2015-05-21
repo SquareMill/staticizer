@@ -75,7 +75,7 @@ module Staticizer
     end
 
     def extract_css_urls(css, base_uri)
-      css.scan(/url\(['"]?(.+?)['"]?\)/).map {|src| make_absolute(base_uri, src[0]) }
+      css.scan(/url\(\s*['"]?(.+?)['"]?\s*\)/).map {|src| make_absolute(base_uri, src[0]) }
     end
 
     def add_urls(urls, info = {})
@@ -184,6 +184,7 @@ module Staticizer
         add_urls(extract_links(doc, url), {:type_hint => "link"})
         add_urls(extract_scripts(doc, url), {:type_hint => "script"})
         add_urls(extract_images(doc, url), {:type_hint => "image"})
+        add_urls(extract_css_urls(response.body, url), {:type_hint => "css_url"})
         add_urls(extract_hrefs(doc, url), {:type_hint => "href"}) unless @opts[:single_page]
       else
         save_page(response, parsed_uri)
