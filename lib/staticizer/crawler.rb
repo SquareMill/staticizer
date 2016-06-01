@@ -23,9 +23,8 @@ module Staticizer
 
       if @opts[:aws]
         bucket_name = @opts[:aws].delete(:bucket_name)
-        AWS.config(opts[:aws])
-        @s3_bucket = AWS::S3.new.buckets[bucket_name]
-        @s3_bucket.acl = :public_read
+        Aws.config.update(opts[:aws])
+        @s3_bucket = Aws::S3::Resource.new.bucket(bucket_name)
       end
 
       if @opts[:valid_domains].nil?
@@ -86,6 +85,7 @@ module Staticizer
       URI::join(base_uri, href).to_s
     rescue StandardError => e
       @log.error "Could not make absolute '#{base_uri}' - '#{href}' - #{e}"
+      return nil
     end
 
     def add_url(url, info = {})
@@ -103,6 +103,7 @@ module Staticizer
     end
 
     def save_page(response, uri)
+      return if @opts[:skip_write]
       if @opts[:aws]
         save_page_to_aws(response, uri)
       else
@@ -160,20 +161,23 @@ module Staticizer
       key = key.gsub(%r{^/},"")
       key = "index.html" if key == ""
       # Upload this file directly to AWS::S3
-      opts = {:acl => :public_read}
+      opts = {:acl => "public-read"}
       opts[:content_type] = response['content-type'] rescue "text/html"
       @log.info "Uploading #{key} to s3 with content type #{opts[:content_type]}"
       if response.respond_to?(:read_body)
         body = process_body(response.read_body, uri, opts)
-        @s3_bucket.objects[key].write(body, opts)
+        @s3_bucket.object(key).put(opts.merge(body: body))
       else
         body = process_body(response, uri, opts)
-        @s3_bucket.objects[key].write(body, opts)
+        @s3_bucket.object(key).put(opts.merge(body: body))
       end
     end
 
     def process_success(response, parsed_uri)
       url = parsed_uri.to_s
+      if @opts[:filter_process]
+        return if @opts[:filter_process].call(response, parsed_uri)
+      end
       case response['content-type']
       when /css/
         save_page(response, parsed_uri)
@@ -211,28 +215,35 @@ module Staticizer
       parsed_uri = URI(url)
 
       @log.debug "Fetching #{parsed_uri}"
-
+  
       # Attempt to use an already open Net::HTTP connection
       key = parsed_uri.host + parsed_uri.port.to_s
       connection = @http_connections[key]
       if connection.nil?
         connection = Net::HTTP.new(parsed_uri.host, parsed_uri.port)
+        connection.use_ssl = true if parsed_uri.scheme.downcase == "https"
         @http_connections[key] = connection
       end
 
       request = Net::HTTP::Get.new(parsed_uri.request_uri)
-      connection.request(request) do |response|
-        case response
-        when Net::HTTPSuccess
-          process_success(response, parsed_uri)
-        when Net::HTTPRedirection
-          redirect_url = response['location']
-          @log.debug "Processing redirect to #{redirect_url}"
-          process_redirect(parsed_uri, redirect_url)
-          add_url(redirect_url)
-        else
-          @log.error "Error #{response.code}:#{response.message} fetching url #{url}"
+      begin
+        connection.request(request) do |response|
+          case response
+          when Net::HTTPSuccess
+            process_success(response, parsed_uri)
+          when Net::HTTPRedirection
+            redirect_url = response['location']
+            @log.debug "Processing redirect to #{redirect_url}"
+            process_redirect(parsed_uri, redirect_url)
+            add_url(redirect_url)
+          else
+            @log.error "Error #{response.code}:#{response.message} fetching url #{url}"
+          end
         end
+      rescue OpenSSL::SSL::SSLError => e
+        @log.error "SSL Error #{e.message} fetching url #{url}"
+      rescue Errno::ECONNRESET => e
+        @log.error "Error #{e.class}:#{e.message} fetching url #{url}"
       end
     end
 

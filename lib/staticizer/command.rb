@@ -44,6 +44,10 @@ module Staticizer
           options[:logger] = Logger.new(v)
         end
 
+        opts.on("--skip-write [PATH]", "Don't write out files to disk or s3") do |v|
+          options[:skip_write] = true
+        end
+
         opts.on("--valid-domains x,y,z", Array, "Comma separated list of domains that should be crawled, other domains will be ignored") do |v|
           options[:valid_domains] = v
         end

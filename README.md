@@ -75,6 +75,8 @@ This will only crawl urls in the domain squaremill.com
 
     s = Staticizer::Crawler.new("http://squaremill.com",
       :aws => {
+        :region => "us-west-1",
+        :endpoint => "http://s3.amazonaws.com",
         :bucket_name => "www.squaremill.com",
         :secret_access_key => "HIA7T189234aADfFAdf322Vs12duRhOHy+23mc1+s",
         :access_key_id => "HJFJS5gSJHMDZDFFSSDQQ"
@@ -106,6 +108,8 @@ This will only crawl urls in the domain squaremill.com
 
     s = Staticizer::Crawler.new("http://squaremill.com",
       :aws => {
+        :region => "us-west-1",
+        :endpoint => "http://s3.amazonaws.com",
         :bucket_name => "www.squaremill.com",
         :secret_access_key => "HIA7T189234aADfFAdf322Vs12duRhOHy+23mc1+s",
         :access_key_id => "HJFJS5gSJHMDZDFFSSDQQ"
@@ -130,6 +134,7 @@ This will only crawl urls in the domain squaremill.com
 * :log_level - Log level - defaults to INFO.
 * :valid_domains - Array of domains that should be crawled. Domains not in this list will be ignored.
 * :process_body - lambda called to pre-process body of content before writing it out.
+* :skip_write - don't write retrieved files to disk or s3, just crawl the site (can be used to find 404s etc.)
 
 ## Contributing
 
