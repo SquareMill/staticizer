@@ -18,6 +18,11 @@ module Staticizer
           options[:aws][:bucket_name] = v
         end
 
+        opts.on("--aws-region [STRING]", "AWS Region of S3 bucket") do |v|
+          options[:aws] ||= {}
+          options[:aws][:region] = v
+        end
+
         opts.on("--aws-access-key [STRING]", "AWS Access Key ID") do |v|
           options[:aws] ||= {}
           options[:aws][:access_key_id] = v
