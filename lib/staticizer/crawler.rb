@@ -158,6 +158,7 @@ module Staticizer
     def save_page_to_aws(response, uri)
       key = uri.path
       key += "?#{uri.query}" if uri.query
+      key = key.gsub(%r{/$},"/index.html")
       key = key.gsub(%r{^/},"")
       key = "index.html" if key == ""
       # Upload this file directly to AWS::S3
