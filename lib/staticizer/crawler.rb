@@ -167,7 +167,11 @@ module Staticizer
 
       # Detect a meta-redirect and set an S3 hosting redirect metadata item
       if response =~ /META http-equiv='refresh' content='0;URL="(.*)"/
-        opts[:website_redirect_location] = $1
+        location = $1
+        if location =~ /^(?:[^\/]|http:\/\/|https\:\/\/).*/
+          location.prepend('/')
+        end
+        opts[:website_redirect_location] = location
       end
 
       @log.info "Uploading #{key} to s3 with content type #{opts[:content_type]}"
