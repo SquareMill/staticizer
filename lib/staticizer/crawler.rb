@@ -69,6 +69,15 @@ module Staticizer
       doc.xpath("//link/@href").map {|href| make_absolute(base_uri, href) }
     end
 
+    def extract_videos(doc, base_uri)
+      doc.xpath("//video").map do |video|
+        sources = video.xpath("//source/@src").map {|src| make_absolute(base_uri, src)}
+        poster = video.attributes["poster"].to_s
+        make_absolute(base_uri, poster)
+        [poster, sources]
+      end.flatten.uniq.compact
+    end
+
     def extract_scripts(doc, base_uri)
       doc.xpath("//script/@src").map {|src| make_absolute(base_uri, src) }
     end
@@ -196,6 +205,7 @@ module Staticizer
         add_urls(extract_scripts(doc, url), {:type_hint => "script"})
         add_urls(extract_images(doc, url), {:type_hint => "image"})
         add_urls(extract_css_urls(response.body, url), {:type_hint => "css_url"})
+        add_urls(extract_videos(doc, parsed_uri), {:type_hint => "video"})
         add_urls(extract_hrefs(doc, url), {:type_hint => "href"}) unless @opts[:single_page]
       else
         save_page(response, parsed_uri)
