@@ -82,10 +82,16 @@ module Staticizer
     end
 
     def make_absolute(base_uri, href)
-      URI::join(base_uri, href).to_s
+      dup_uri = base_uri.dup
+      dup_uri.query = nil
+      if href.to_s =~ /https?/i
+        href.to_s.gsub(" ", "+")
+      else
+        URI::join(dup_uri.to_s, href).to_s
+      end
     rescue StandardError => e
-      @log.error "Could not make absolute '#{base_uri}' - '#{href}' - #{e}"
-      return nil
+      @log.error "Could not make absolute #{dup_uri} - #{href}"
+      nil
     end
 
     def add_url(url, info = {})
