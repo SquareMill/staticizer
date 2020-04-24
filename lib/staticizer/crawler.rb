@@ -179,6 +179,16 @@ module Staticizer
       # Upload this file directly to AWS::S3
       opts = {:acl => "public-read"}
       opts[:content_type] = response['content-type'] rescue "text/html"
+
+      # Detect a meta-redirect and set an S3 hosting redirect metadata item
+      if response =~ /META http-equiv='refresh' content='0;URL="(.*)"/
+        location = $1
+        if location =~ /^(?:[^\/]|http:\/\/|https\:\/\/).*/
+          location.prepend('/')
+        end
+        opts[:website_redirect_location] = location
+      end
+
       @log.info "Uploading #{key} to s3 with content type #{opts[:content_type]}"
       if response.respond_to?(:read_body)
         body = process_body(response.read_body, uri, opts)
@@ -213,7 +223,6 @@ module Staticizer
     end
 
     # If we hit a redirect we save the redirect as a meta refresh page
-    # TODO: for AWS S3 hosting we could instead create a redirect?
     def process_redirect(url, destination_url)
       body = "<html><head><META http-equiv='refresh' content='0;URL=\"#{destination_url}\"'></head><body>You are being redirected to <a href='#{destination_url}'>#{destination_url}</a>.</body></html>"
       save_page(body, url)
